@@ -1,1 +1,1 @@
-HIGHT_SUM_DISPLAY
+left_sign

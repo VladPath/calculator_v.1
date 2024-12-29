@@ -21,12 +21,14 @@ width_button = W/4
 
 sc = pg.display.set_mode((W,H))
 
-print(hight_button)
 
 pg.display.set_caption('Calculator v1.0')
 icon = pg.image.load('img/calc_icon.jpg').convert()
 icon.set_colorkey(WHITE)
 pg.display.set_icon(icon)
+
+pg.draw.rect(sc, DARK_GREY, (0,0,W,HIGHT_SUM_DISPLAY),0)
+
 
 font = pg.font.SysFont(None, 45)
 # img = font.render('+', True, WHITE)
@@ -81,23 +83,45 @@ for i in range(4):
     pg.draw.aaline(sc,LIGHT_BLACK,(0,y),(W,y))
     y += hight_button
 
+digits = [
+    pg.K_0,pg.K_1,pg.K_2,pg.K_3,
+    pg.K_4,pg.K_5,pg.K_6,pg.K_7,
+    pg.K_8,pg.K_9,
+]
+
 # signs for results
-left_sign = '20'
-right_sigh = '10'
+left_sign = ''
+right_sigh = ''
+sum = '0'
+
 # font for sum 
 font = pg.font.SysFont(None, 45)
 one_symb = 18
+the_calc_symbol=False
 while 1:
+    pg.draw.rect(sc, DARK_GREY, (0,0,W,HIGHT_SUM_DISPLAY),0)
     for event in pg.event.get():
         if event.type == pg.QUIT:
             exit()
-    
-    sum = int(left_sign) + int(right_sigh)
-    rect1 = pg.Rect((0,HIGHT_SUM_DISPLAY-40,(W-30)-(one_symb)*len(str(sum))+5,0))
+        elif event.type == pg.KEYDOWN:
+            for i,dig in enumerate(digits):
+                
+                if event.key == dig:
+                    left_sign = left_sign + str(i)
+                    
+                
+        
+    # sum = int(left_sign) + int(right_sigh) + int(start_zero)
+    if not left_sign:
+        calculate = sum
+    elif not the_calc_symbol:
+        calculate = left_sign
+
+    rect1 = pg.Rect((0,HIGHT_SUM_DISPLAY-40,(W-30)-(one_symb)*len(str(calculate))+5,0))
     pos = rect1.bottomright
-    print_result = font.render(str(sum), True, WHITE)
+    print_result = font.render(str(calculate), True, WHITE)
     sc.blit(print_result, pos)
-    
+    # pg.draw.rect(sc,WHITE,(0,HIGHT_SUM_DISPLAY,W,0),1)
     pg.display.update()                
     clock.tick(FPS)
             
