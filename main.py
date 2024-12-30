@@ -1,6 +1,6 @@
 from fcntl import flock
 import pygame as pg
-from buttons import button_block
+from buttons import button_block, calculate_func
 
 clock = pg.time.Clock()
 
@@ -10,6 +10,7 @@ FPS = 60
 W = 300
 H = 400
 HIGHT_SUM_DISPLAY = 100
+one_symb = 18
 
 WHITE = (255,255,255)
 LIGHT_BLACK = (36, 35, 33)
@@ -88,6 +89,20 @@ digits = [
     pg.K_4,pg.K_5,pg.K_6,pg.K_7,
     pg.K_8,pg.K_9,
 ]
+symbols = [
+    pg.K_8,
+    pg.K_5,
+    pg.K_MINUS,
+    pg.K_SLASH,
+    pg.K_BACKSPACE,
+    61,
+    pg.K_a,
+    pg.K_COMMA,
+    pg.K_PERIOD,
+    ]
+
+for i in symbols:
+    print(i)
 
 # signs for results
 left_sign = ''
@@ -96,19 +111,70 @@ sum = '0'
 
 # font for sum 
 font = pg.font.SysFont(None, 45)
-one_symb = 18
+
 the_calc_symbol=False
 while 1:
     pg.draw.rect(sc, DARK_GREY, (0,0,W,HIGHT_SUM_DISPLAY),0)
     for event in pg.event.get():
         if event.type == pg.QUIT:
             exit()
+            
+        # Главный цикл программы
         elif event.type == pg.KEYDOWN:
-            for i,dig in enumerate(digits):
+            print(event.key)
+            if event.key == pg.K_PLUS:
+                left_sign = '+'
                 
-                if event.key == dig:
-                    left_sign = left_sign + str(i)
+            # ввод '=' для получения результата x,y 
+            elif  event.key in(pg.K_EQUALS,pg.K_RETURN) and event.mod != pg.KMOD_LSHIFT and right_sigh\
+                or event.key == pg.K_5 and event.mod == pg.KMOD_LSHIFT and right_sigh:
                     
+                sum = calculate_func(the_calc_symbol,event.key, left_sign, right_sigh)
+                left_sign = sum
+                calculate = left_sign 
+                right_sigh = ''
+                the_calc_symbol = False
+                
+            # ввод символов для вычисления
+            elif event.mod == pg.KMOD_LSHIFT and  event.key in symbols and not the_calc_symbol:
+                # Если нажали Lshift + а производим противоположное число
+                if event.key == pg.K_a:
+                    if right_sigh:
+                        if int(right_sigh) > 0:
+                            right_sigh = '-'+right_sigh
+                        else:
+                            right_sigh = right_sigh[1:]
+                    elif left_sign:
+                        if int(left_sign) > 0:
+                            left_sign = '-'+left_sign
+                        else:
+                            left_sign = left_sign[1:]
+                            
+                # если нажата клавиша shift+5  и нет  значения счета 
+                # вернуть какой это процент от ста
+                elif event.key == pg.K_5 and not the_calc_symbol:
+                    left_sign = str(int(left_sign)/100)
+                
+                elif event.key == pg.K_5 and the_calc_symbol:
+                    right_sigh = str(int(left_sign)/100)
+                
+                elif event.key in (pg.K_COMMA,pg.K_PERIOD ) and not the_calc_symbol:
+                    left_sign = left_sign + '.'
+                    
+                elif event.key in (pg.K_COMMA,pg.K_PERIOD ) and the_calc_symbol:
+                    right_sigh = right_sigh + '.'
+                
+                else:       
+                    the_calc_symbol = event.key
+            
+            # Ввод цифр в левое и правое значение
+            elif event.key in digits:
+                for i,dig in enumerate(digits):
+                    if event.key == dig and not the_calc_symbol:
+                        left_sign = left_sign + str(i)
+                    if event.key == dig and the_calc_symbol:
+                        right_sigh = right_sigh + str(i)
+
                 
         
     # sum = int(left_sign) + int(right_sigh) + int(start_zero)
@@ -116,12 +182,18 @@ while 1:
         calculate = sum
     elif not the_calc_symbol:
         calculate = left_sign
-
+    elif the_calc_symbol and not right_sigh:
+        calculate = 0
+    elif the_calc_symbol and right_sigh:
+        calculate = right_sigh
+    
+    
+        
     rect1 = pg.Rect((0,HIGHT_SUM_DISPLAY-40,(W-30)-(one_symb)*len(str(calculate))+5,0))
     pos = rect1.bottomright
     print_result = font.render(str(calculate), True, WHITE)
     sc.blit(print_result, pos)
     # pg.draw.rect(sc,WHITE,(0,HIGHT_SUM_DISPLAY,W,0),1)
-    pg.display.update()                
+    pg.display.update()
     clock.tick(FPS)
             

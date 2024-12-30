@@ -1,1 +1,1 @@
-left_sign
+calc_symbol
