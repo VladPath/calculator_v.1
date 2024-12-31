@@ -95,7 +95,7 @@ def get_lines():
         y += hight_button
 get_lines()
 
-def button_is_clickd(x:int,color:tuple[int]):
+def button_is_click(x:int,color:tuple[int]):
     """ функция обрабатывает нажатие клавиши и отрисовывает эффект нажатия"""
     tmp_color = created_butons[x].color
     created_butons[x].change_color(color)
@@ -114,17 +114,19 @@ digits = [
 digits_title = [
     'zero','one','two','three','four', 'five','six','seven','eight','nine'
 ]
+
 symbols = [
     pg.K_8,
-    pg.K_5,
     pg.K_MINUS,
-    pg.K_SLASH,
-    pg.K_BACKSPACE,
     61,
-    pg.K_a,
-    pg.K_COMMA,
-    pg.K_PERIOD,
+    pg.K_SLASH,
     ]
+symbols_title = [
+    'multyply',
+    'minus',
+    'plus',
+    'devide',
+]
 
 for i in symbols:
     print(i)
@@ -148,8 +150,13 @@ while 1:
         elif event.type == pg.KEYDOWN:
             print(event.key)
             # ввод '=' для получения результата x,y 
-            if  event.key in(pg.K_EQUALS,pg.K_RETURN) and event.mod != pg.KMOD_LSHIFT and right_sigh\
+            if  event.key in (pg.K_EQUALS,pg.K_RETURN) and event.mod != pg.KMOD_LSHIFT and right_sigh\
                 or event.key == pg.K_5 and event.mod == pg.KMOD_LSHIFT and right_sigh:
+                
+                if event.key in (pg.K_EQUALS,pg.K_RETURN):
+                    button_is_click('result', TUPED_ORANGE)
+                elif event.key == pg.K_5 and event.mod == pg.KMOD_LSHIFT:
+                    button_is_click('percent', TUPED_DARK_GREY)
                 
                 sum = calculate_func(the_calc_symbol,event.key, left_sign, right_sigh)
                 left_sign = sum
@@ -161,11 +168,8 @@ while 1:
             elif event.mod == pg.KMOD_LSHIFT and  event.key in symbols and not the_calc_symbol:
                 # Если нажали Lshift + а производим противоположное число
                 if event.key == pg.K_a:
-                    tmp_color = created_butons['plus_minus'].color
-                    created_butons['plus_minus'].change_color(TUPED_DARK_GREY)
+                    button_is_click('plus_minus', TUPED_DARK_GREY)
                     
-                    pg.display.update()
-                    clock.tick(10)
                     if right_sigh:
                         if int(right_sigh) > 0:
                             right_sigh = '-'+right_sigh
@@ -176,25 +180,30 @@ while 1:
                             left_sign = '-'+left_sign
                         else:
                             left_sign = left_sign[1:]
-                    created_butons['plus_minus'].change_color(tmp_color)
                             
                 # если нажата клавиша shift+5  и нет  значения счета 
                 # вернуть какой это процент от ста
                 elif event.key == pg.K_5 and not the_calc_symbol:
+                    button_is_click('percent', TUPED_DARK_GREY)
                     
                     left_sign = str(int(left_sign)/100)
                 elif event.key == pg.K_5 and the_calc_symbol:
-                    
+                    button_is_click('percent', TUPED_DARK_GREY)
                     right_sigh = str(int(left_sign)/100)
                 
                 elif event.key in (pg.K_COMMA,pg.K_PERIOD ) and not the_calc_symbol:
-                        
+                    button_is_click('point', TUPED_GREY)
                     left_sign = left_sign + '.'
                     
                 elif event.key in (pg.K_COMMA,pg.K_PERIOD ) and the_calc_symbol:
+                    button_is_click('point', TUPED_GREY)
                     right_sigh = right_sigh + '.'
                 
                 else:       
+                    for i in range(len(symbols)):
+                        if symbols[i] == event.key:
+                            button_is_click(symbols_title[i], TUPED_ORANGE)
+                            
                     the_calc_symbol = event.key
             
             # Ввод цифр в левое и правое значение
@@ -202,23 +211,12 @@ while 1:
 
                 for i,dig in enumerate(digits):
                     if event.key == dig and not the_calc_symbol:
-                        tmp_color = created_butons[digits_title[i]].color
-                        created_butons[digits_title[i]].change_color(TUPED_GREY)
+                        button_is_click(digits_title[i], TUPED_DARK_GREY)
                         
                         left_sign = left_sign + str(i)
-                        pg.display.update()
-                        clock.tick(10)
-                        
-                        created_butons[digits_title[i]].change_color(tmp_color)
                     if event.key == dig and the_calc_symbol:
-                        tmp_color = created_butons[digits_title[i]].color
-                        created_butons[digits_title[i]].change_color(TUPED_GREY)
-                        
+                        button_is_click(digits_title[i], TUPED_DARK_GREY)
                         right_sigh = right_sigh + str(i)
-                        pg.display.update()
-                        clock.tick(10)
-                        created_butons[digits_title[i]].change_color(tmp_color)
-                get_lines()
                 
 
                 

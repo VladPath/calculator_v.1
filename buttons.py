@@ -41,6 +41,12 @@ class button_block:
     def get_block(self):
         return pg.draw.rect(sc, self.color, self.coords,)
     
+    def change_color(self,color):
+        pg.draw.rect(sc,color,self.coords)
+        self.create_symbol()
+
+        
+    
 symblos_id=[
     {56:'*',
     44: '%',
@@ -97,4 +103,3 @@ def calculate_func(calc_symbol:int, eq:int, x:int=0, y:int=0) -> str:
     
     return str('Ошибка 101')
     
-print(10*1%0.1)
